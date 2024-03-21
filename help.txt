@@ -1,0 +1,22 @@
+1: py -3 -m venv venv          --> to create python environment
+2: venv\Scripts\activate.bat   --> to activate terminal (Make sure terminal is CMD not SHELL)
+3: pip install -r requirements.txt  --> it will install all packages defined in that file
+4: uvicorn app.main:app --reload
+
+# Init Alembic
+1: alembic init alembic
+2: Go into env.py inside alembic and add
+from app.models import Base
+from app.config import settings
+
+config.set_main_option("sqlalchemy.url", f"postgresql://{settings.database_username}:{settings.database_password}@{settings.database_hostname}:{settings.database_port}/{settings.database_name}")
+target_metadata = Base.metadata
+
+# Every time you make any changes inside database table columns make sure to run these 2 commands
+alembic revision --autogenerate -m "init"
+alembic upgrade head
+
+------------------------------------
+pip freeze                        --> to show all python installed packages
+pip freeze > requirements.txt     --> to save all installed packages into .txt file
+pip install -r requirements.txt   --> it will install all packages defined in that file
