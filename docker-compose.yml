@@ -1,0 +1,46 @@
+# version of docker-compose
+version: "3.1"
+# services are containers
+services:
+  api:
+    build: . # build the image from the Dockerfile in the current directory
+    depends_on:
+      - postgres
+    ports:
+      - '8000:8000' # map port 8000 on the host to port 8000 on the container
+    env_file:
+      - ./.env # load environment variables from the .env file
+    environment:
+      # Dont use localhost as Hostname, use the service name
+      DATABASE_HOSTNAME: postgres
+    #  This volume is used to mount the current directory into the /usr/src/app directory inside the container, ensuring that any changes made to the code in the current directory are immediately reflected inside the container.
+    # ro means files inside containers are readonly only we can change not docker itself
+    volumes:
+      - ./:/usr/src/app:ro
+    # you must be thinking why I didnot add --reload in Dockerfile instead use a command here. Because thats is for production mode in production mode we dont want to use --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    # ensures that the api container is connected to the same dev network
+    networks:
+      - dev
+
+  postgres:
+    image: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    #   This volume is used to persist the data of the PostgreSQL database, ensuring that even if the PostgreSQL container is stopped or removed, the data stored in the /var/lib/postgresql/data directory inside the container will not be lost.
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # ensures that the postgres container is connected to the same dev network
+    networks:
+      - dev
+
+# This line would instruct Docker to create a named volume called postgres_data.
+volumes:
+  postgres_data:
+
+networks:
+  dev:

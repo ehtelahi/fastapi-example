@@ -20,3 +20,18 @@ alembic upgrade head
 pip freeze                        --> to show all python installed packages
 pip freeze > requirements.txt     --> to save all installed packages into .txt file
 pip install -r requirements.txt   --> it will install all packages defined in that file
+------------------------------------
+docker-compose up -d
+docker-compose -f docker-compose.yml up -d   -> -f means file
+docker ps
+docker-compose down
+docker exec -it <container> bash
+docker network ls
+docker network inspect <network_name>
+
+# Push Image to docker hub, First create repository on docker hub
+docker login
+docker image ls
+docker image tag <image_name> <docker_hub_repository>   -> example: docker image tag fastapi-api ehtelahi/fastapi -> link local image to docker repository
+docker image ls  -> run this to make sure ehtelahi/fastapi is created as image
+docker push <docker_hub_repository>
