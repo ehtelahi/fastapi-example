@@ -4,10 +4,28 @@ on: [push, pull_request]
 
 jobs:
     job1:
+        environment: testing
+        env:
+            DATABASE_HOSTNAME: ${{ secrets.DATABASE_HOSTNAME }}
+            DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+            DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+            DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+            DATABASE_NAME:  ${{ secrets.DATABASE_NAME }}
+            SECRET_KEY: ${{ secrets.SECRET_KEY }}
+            ALGORITHM:  ${{ secrets.ALGORITHM }}
+            ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
               uses: actions/checkout@v2
 
-            - name: say hello
-              run: echo "Hello, ${{ github.actor }}"
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: '3.1'
+
+            - name: Update pip
+              run: python -m pip install --upgrade pip
+
+            - name: Install dependencies
+              run: pip install -r requirements.txt
