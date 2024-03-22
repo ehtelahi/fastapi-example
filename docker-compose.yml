@@ -1,9 +1,10 @@
 # version of docker-compose
-version: "3.1"
+version: "3.8"
 # services are containers
 services:
   api:
-    build: . # build the image from the Dockerfile in the current directory
+    build:  # build the image from the Dockerfile in the current directory
+       context: .
     depends_on:
       - postgres
     ports:
@@ -11,12 +12,12 @@ services:
     env_file:
       - ./.env # load environment variables from the .env file
     environment:
-      # Dont use localhost as Hostname, use the service name
+      # Dont use localhost as Hostname, use the service name instead
       DATABASE_HOSTNAME: postgres
     #  This volume is used to mount the current directory into the /usr/src/app directory inside the container, ensuring that any changes made to the code in the current directory are immediately reflected inside the container.
     # ro means files inside containers are readonly only we can change not docker itself
     volumes:
-      - ./:/usr/src/app:ro
+      - .:/usr/src/app:ro
     # you must be thinking why I didnot add --reload in Dockerfile instead use a command here. Because thats is for production mode in production mode we dont want to use --reload
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     # ensures that the api container is connected to the same dev network
@@ -38,9 +39,25 @@ services:
     networks:
       - dev
 
+  pgadmin4:
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    ports:
+      - '5050:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@site.com
+      PGADMIN_DEFAULT_PASSWORD: 123
+
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - dev
+
 # This line would instruct Docker to create a named volume called postgres_data.
 volumes:
   postgres_data:
+  pgadmin_data:
 
 networks:
   dev:

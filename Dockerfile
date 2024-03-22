@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.9
 
 # path inside the container in docker
 WORKDIR /usr/src/app
